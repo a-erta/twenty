@@ -57,7 +57,7 @@ services:
     image:
       url: docker.io/twentycrm/twenty:latest # stessa versione del server, sempre
     region: frankfurt
-    plan: starter
+    plan: standard # 2GB RAM — anche il worker va in OOM sotto i 2GB
     dockerCommand: yarn worker:prod
     envVars:
       - key: SERVER_URL
