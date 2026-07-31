@@ -1,0 +1,99 @@
+# Blueprint Render — Twenty CRM per AMG Boat Experiences
+# Deploy: repo Git con questo file → Render Dashboard → New → Blueprint
+# Regione: Francoforte (dati in UE)
+
+services:
+  # --- Server web (UI + API GraphQL/REST) ---
+  - type: web
+    name: twenty-server
+    runtime: image
+    image:
+      url: docker.io/twentycrm/twenty:latest # pinnare una versione (es. v0.x) prima di andare in produzione
+    region: frankfurt
+    plan: starter
+    healthCheckPath: /healthz
+    disk:
+      name: twenty-storage
+      mountPath: /app/packages/twenty-server/.local-storage
+      sizeGB: 10
+    envVars:
+      - key: SERVER_URL
+        value: https://twenty-server.onrender.com # aggiornare con il dominio custom (es. crm.amgboatxp.com)
+      - key: PORT
+        value: "3000"
+      - key: APP_SECRET
+        generateValue: true
+      - key: PG_DATABASE_URL
+        fromDatabase:
+          name: twenty-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: twenty-redis
+          property: connectionString
+      - key: STORAGE_TYPE
+        value: local
+      # --- Fase 2: Google OAuth (sync Gmail/Calendar + login Google) ---
+      # - key: AUTH_GOOGLE_ENABLED
+      #   value: "true"
+      # - key: AUTH_GOOGLE_CLIENT_ID
+      #   sync: false
+      # - key: AUTH_GOOGLE_CLIENT_SECRET
+      #   sync: false
+      # - key: AUTH_GOOGLE_CALLBACK_URL
+      #   value: https://<SERVER_URL>/auth/google/redirect
+      # - key: AUTH_GOOGLE_APIS_CALLBACK_URL
+      #   value: https://<SERVER_URL>/auth/google-apis/get-access-token
+      # - key: MESSAGING_PROVIDER_GMAIL_ENABLED
+      #   value: "true"
+      # - key: CALENDAR_PROVIDER_GOOGLE_ENABLED
+      #   value: "true"
+
+  # --- Worker (email sync, import, job asincroni) ---
+  - type: worker
+    name: twenty-worker
+    runtime: image
+    image:
+      url: docker.io/twentycrm/twenty:latest # stessa versione del server, sempre
+    region: frankfurt
+    plan: starter
+    dockerCommand: yarn worker:prod
+    envVars:
+      - key: SERVER_URL
+        value: https://twenty-server.onrender.com
+      - key: APP_SECRET
+        fromService:
+          type: web
+          name: twenty-server
+          envVarKey: APP_SECRET
+      - key: PG_DATABASE_URL
+        fromDatabase:
+          name: twenty-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: twenty-redis
+          property: connectionString
+      - key: DISABLE_DB_MIGRATIONS
+        value: "true"
+      - key: DISABLE_CRON_JOBS_REGISTRATION
+        value: "true"
+      - key: STORAGE_TYPE
+        value: local
+
+  # --- Redis (code e cache) ---
+  - type: keyvalue
+    name: twenty-redis
+    region: frankfurt
+    plan: starter
+    maxmemoryPolicy: noeviction # richiesto da Twenty: le code non devono perdere job
+    ipAllowList: [] # solo rete interna Render
+
+databases:
+  # --- Postgres 16 gestito ---
+  - name: twenty-db
+    region: frankfurt
+    plan: basic-1gb
+    postgresMajorVersion: "16"
