@@ -18,7 +18,7 @@ services:
       sizeGB: 10
     envVars:
       - key: SERVER_URL
-        value: https://twenty-server.onrender.com # aggiornare con il dominio custom (es. crm.amgboatxp.com)
+        value: https://twenty-server-fna3.onrender.com # aggiornare se si passa a un dominio custom (es. crm.amgboatxp.com)
       - key: PORT
         value: "3000"
       - key: APP_SECRET
@@ -61,7 +61,7 @@ services:
     dockerCommand: yarn worker:prod
     envVars:
       - key: SERVER_URL
-        value: https://twenty-server.onrender.com
+        value: https://twenty-server-fna3.onrender.com
       - key: APP_SECRET
         fromService:
           type: web
