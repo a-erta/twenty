@@ -87,7 +87,7 @@ services:
   - type: keyvalue
     name: twenty-redis
     region: frankfurt
-    plan: free # 25MB, no persistenza code: sufficiente in partenza; alzare se il worker si intasa
+    plan: starter # 256MB con persistenza — il Free (25MB) si è saturato il 01/08/2026 bloccando il CRM (EXECABORT)
     maxmemoryPolicy: noeviction # richiesto da Twenty: le code non devono perdere job
     ipAllowList: [] # solo rete interna Render
 
