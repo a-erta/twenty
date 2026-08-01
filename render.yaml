@@ -34,21 +34,21 @@ services:
           property: connectionString
       - key: STORAGE_TYPE
         value: local
-      # --- Fase 2: Google OAuth (sync Gmail/Calendar + login Google) ---
-      # - key: AUTH_GOOGLE_ENABLED
-      #   value: "true"
-      # - key: AUTH_GOOGLE_CLIENT_ID
-      #   sync: false
-      # - key: AUTH_GOOGLE_CLIENT_SECRET
-      #   sync: false
-      # - key: AUTH_GOOGLE_CALLBACK_URL
-      #   value: https://<SERVER_URL>/auth/google/redirect
-      # - key: AUTH_GOOGLE_APIS_CALLBACK_URL
-      #   value: https://<SERVER_URL>/auth/google-apis/get-access-token
-      # - key: MESSAGING_PROVIDER_GMAIL_ENABLED
-      #   value: "true"
-      # - key: CALENDAR_PROVIDER_GOOGLE_ENABLED
-      #   value: "true"
+      # --- Google OAuth (sync Gmail/Calendar + login Google) ---
+      - key: AUTH_GOOGLE_ENABLED
+        value: "true"
+      - key: AUTH_GOOGLE_CLIENT_ID
+        sync: false # incollare in dashboard (Google Cloud Console -> credenziali OAuth)
+      - key: AUTH_GOOGLE_CLIENT_SECRET
+        sync: false # incollare in dashboard
+      - key: AUTH_GOOGLE_CALLBACK_URL
+        value: https://crm.amgboatxp.com/auth/google/redirect
+      - key: AUTH_GOOGLE_APIS_CALLBACK_URL
+        value: https://crm.amgboatxp.com/auth/google-apis/get-access-token
+      - key: MESSAGING_PROVIDER_GMAIL_ENABLED
+        value: "true"
+      - key: CALENDAR_PROVIDER_GOOGLE_ENABLED
+        value: "true"
 
   # --- Worker (email sync, import, job asincroni) ---
   - type: worker
@@ -82,6 +82,21 @@ services:
         value: "true"
       - key: STORAGE_TYPE
         value: local
+      # --- Google OAuth (il worker fa il sync Gmail/Calendar) ---
+      - key: AUTH_GOOGLE_ENABLED
+        value: "true"
+      - key: AUTH_GOOGLE_CLIENT_ID
+        sync: false # stesso valore del server
+      - key: AUTH_GOOGLE_CLIENT_SECRET
+        sync: false # stesso valore del server
+      - key: AUTH_GOOGLE_CALLBACK_URL
+        value: https://crm.amgboatxp.com/auth/google/redirect
+      - key: AUTH_GOOGLE_APIS_CALLBACK_URL
+        value: https://crm.amgboatxp.com/auth/google-apis/get-access-token
+      - key: MESSAGING_PROVIDER_GMAIL_ENABLED
+        value: "true"
+      - key: CALENDAR_PROVIDER_GOOGLE_ENABLED
+        value: "true"
 
   # --- Redis (code e cache) ---
   - type: keyvalue
