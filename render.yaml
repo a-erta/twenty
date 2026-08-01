@@ -49,6 +49,24 @@ services:
         value: "true"
       - key: CALENDAR_PROVIDER_GOOGLE_ENABLED
         value: "true"
+      # --- SMTP transazionale via Google Workspace (inviti, reset password, verifiche) ---
+      # Auth con casella reale alessandro.erta@amgboatxp.com + App Password; mittente = alias crm@amgboatxp.com
+      - key: EMAIL_DRIVER
+        value: smtp
+      - key: EMAIL_SMTP_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_SMTP_PORT
+        value: "465" # SSL; se Gmail rifiuta, provare 587 (STARTTLS)
+      - key: EMAIL_SMTP_USER
+        value: alessandro.erta@amgboatxp.com
+      - key: EMAIL_SMTP_PASSWORD
+        sync: false # App Password Google — incollare in dashboard
+      - key: EMAIL_FROM_ADDRESS
+        value: crm@amgboatxp.com # alias della casella sopra
+      - key: EMAIL_FROM_NAME
+        value: AMG Boat Experiences
+      - key: EMAIL_SYSTEM_ADDRESS
+        value: crm@amgboatxp.com
 
   # --- Worker (email sync, import, job asincroni) ---
   - type: worker
