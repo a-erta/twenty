@@ -148,3 +148,4 @@ databases:
     region: frankfurt
     plan: basic-1gb
     postgresMajorVersion: "16"
+    ipAllowList: [] # solo rete interna Render (chiuso il 23/11/2026, PG-01)
